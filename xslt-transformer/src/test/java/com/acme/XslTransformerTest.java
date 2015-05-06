@@ -26,7 +26,7 @@ import org.springframework.messaging.support.GenericMessage;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.aramex.bdl.ingest.processors.XsltTransformerModuleConfig;
+import com.acme.XsltTransformerModuleConfig;
 
 
 
