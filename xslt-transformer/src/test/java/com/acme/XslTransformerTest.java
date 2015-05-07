@@ -7,14 +7,12 @@ import java.util.Properties;
 import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.env.PropertiesPropertySource;
 import org.springframework.messaging.Message;
@@ -25,8 +23,6 @@ import org.springframework.messaging.SubscribableChannel;
 import org.springframework.messaging.support.GenericMessage;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import com.acme.XsltTransformerModuleConfig;
 
 
 
@@ -47,7 +43,7 @@ import com.acme.XsltTransformerModuleConfig;
  * @author Muhammad Ali
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations={"classpath:xslt-transformer-test-context.xml"})
+@ContextConfiguration
 public class XslTransformerTest {
 	
 	
@@ -57,6 +53,7 @@ public class XslTransformerTest {
 		Properties properties = new Properties();
 		properties.put("xslt","classpath:awbs-test.xsl");
 		context.getEnvironment().getPropertySources().addLast(new PropertiesPropertySource("options", properties));
+		context.getEnvironment().getPropertySources().addLast(new PropertiesPropertySource("props", properties));
 		context.register(TestConfiguration.class);
 		context.refresh();
 
@@ -68,11 +65,11 @@ public class XslTransformerTest {
 			@Override
 			public void handleMessage(Message<?> message) throws MessagingException {
 				handled.set(true);
-				assertEquals("124,SENDING PACKAGE", message.getPayload());
+				assertEquals("1002,OLV80UJS7YO", message.getPayload());
 			}
 		});
 		
-		 @SuppressWarnings("resource")
+		@SuppressWarnings("resource")
 		Scanner scanner = new Scanner(File.class.getResourceAsStream("/test.xml")).useDelimiter("\\Z");
 	
 	    String content = scanner.next();
@@ -82,13 +79,15 @@ public class XslTransformerTest {
 
 	@Configuration
 	@Import(XsltTransformerModuleConfig.class)
-	//@ImportResource("classpath:xslt-transformer-test-context.xml")
 	static class TestConfiguration {
-		@Bean
-		public static PropertySourcesPlaceholderConfigurer placeHolderConfigurer() {
-			PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer = new
-					PropertySourcesPlaceholderConfigurer();
-			return propertySourcesPlaceholderConfigurer;
+
+		final static String XSLT = "classpath:awbs-test.xsl";
+		
+		
+		@Bean 
+		public static String xslt()
+		{
+			return XSLT;
 		}
 	}
 //	@Autowired
